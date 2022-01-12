@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
       last_awake = now;
     }
 
-    if ((power_level == DPMSModeStandby) && (prev_power_level != power_level)) {
+    if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
       printf("DPMS screen sleeping\n");
       checkpoint("sleeptime", now - last_awake);
     }
