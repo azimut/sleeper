@@ -1,0 +1,26 @@
+* sleeper
+
+A deamon to keep track of your computer usage.
+
+It tries to figure it out by:
+- Checking changes of status on X11 DPMS
+- Checking for system suspensions
+
+It needs to run as a daemon, since there is no system log for DPMS status changes.
+
+It will print to stdout (journalctl) and into 2 files
+- ~/.cache/awaketime
+- ~/.cache/sleeptime
+
+** Installation
+
+#+begin_src
+$ make
+$ cp sleeper ~/bin/
+$ cp sleeper.service ~/.config/systemd/user
+$ systemctl --user start sleeper
+#+end_src
+
+** References
+- https://askubuntu.com/questions/1171742/how-to-get-date-time-of-the-last-system-hibernate-suspend-resume
+- https://stackoverflow.com/questions/60477195/turning-off-monitor-in-c/60477486

@@ -1,0 +1,9 @@
+[Unit]
+Description=Simple sleeper Logger
+
+[Service]
+ExecStart=%h/bin/sleeper 60
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
