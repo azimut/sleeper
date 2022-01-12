@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
   if (sleep_time == -1)
     errx(EXIT_FAILURE, "argv[1] invalid");
 
-  now = last_awake = time(NULL);
+  last_awake = time(NULL);
   before = 0;
 
   power_level = prev_power_level = DPMSModeOn;
