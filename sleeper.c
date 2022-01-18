@@ -42,7 +42,7 @@ long string_to_long(char *arg) {
 
 int main(int argc, char *argv[]) {
   long sleep_time;
-  time_t last_awake, before, now;
+  time_t last_awake, before, now, diff;
   Display *dpy;
   CARD16 power_level, prev_power_level;
   BOOL state;
@@ -76,20 +76,26 @@ int main(int argc, char *argv[]) {
     DPMSInfo(dpy, &power_level, &state);
 
     if ((now - before) > sleep_time * 2) {
-      printf("Suspension sytem wake\n");
-      checkpoint("awaketime", now - last_awake);
+      diff = now - last_awake;
+      printf("Suspension sytem wake after `%.2f` hours\n",
+             diff / 60.0f / 60.0f);
+      checkpoint("awaketime", diff);
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOn) && (prev_power_level != power_level)) {
-      printf("DPMS screen wake up\n");
-      checkpoint("awaketime", now - last_awake);
+      diff = now - last_awake;
+      printf("DPMS screen wake up after `%.2f` hours of sleep\n",
+             diff / 60.0f / 60.0f);
+      checkpoint("awaketime", diff);
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
-      printf("DPMS screen sleeping\n");
-      checkpoint("sleeptime", now - last_awake);
+      diff = now - last_awake;
+      printf("DPMS screen sleeping after `%.2f` hours awake\n",
+             diff / 60.0f / 60.0f);
+      checkpoint("sleeptime", diff);
     }
 
     prev_power_level = power_level;
