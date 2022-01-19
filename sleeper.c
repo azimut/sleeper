@@ -72,11 +72,11 @@ int main(int argc, char *argv[]) {
     sleep(sleep_time);
 
     now = time(NULL);
+    diff = now - last_awake;
 
     DPMSInfo(dpy, &power_level, &state);
 
     if ((now - before) > sleep_time * 2) {
-      diff = now - last_awake;
       printf("Suspension sytem wake after `%.2f` hours\n",
              diff / 60.0f / 60.0f);
       checkpoint("awaketime", diff);
@@ -84,7 +84,6 @@ int main(int argc, char *argv[]) {
     }
 
     if ((power_level == DPMSModeOn) && (prev_power_level != power_level)) {
-      diff = now - last_awake;
       printf("DPMS screen wake up after `%.2f` hours of sleep\n",
              diff / 60.0f / 60.0f);
       checkpoint("awaketime", diff);
@@ -92,10 +91,10 @@ int main(int argc, char *argv[]) {
     }
 
     if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
-      diff = now - last_awake;
       printf("DPMS screen sleeping after `%.2f` hours awake\n",
              diff / 60.0f / 60.0f);
       checkpoint("sleeptime", diff);
+      last_awake = now;
     }
 
     prev_power_level = power_level;
