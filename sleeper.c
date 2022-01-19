@@ -10,9 +10,11 @@
 #include <time.h>
 #include <unistd.h>
 
-void checkpoint(char *filename, int offset) {
+void checkpoint(char *filename) {
   FILE *fd;
   char *file;
+  time_t offset;
+  offset = time(NULL);
   file = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
                 1);
   strcpy(file, getenv("HOME"));
@@ -79,19 +81,19 @@ int main(int argc, char *argv[]) {
 
     if ((now - before) > sleep_time * 2) {
       printf("Suspension sytem wake after `%.2f` hours\n", diff);
-      checkpoint("awaketime", diff);
+      checkpoint("awaketime");
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOn) && (prev_power_level != power_level)) {
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", diff);
-      checkpoint("awaketime", diff);
+      checkpoint("awaketime");
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
       printf("DPMS screen sleeping after `%.2f` hours awake\n", diff);
-      checkpoint("sleeptime", diff);
+      checkpoint("sleeptime");
       last_awake = now;
     }
 
