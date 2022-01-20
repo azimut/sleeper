@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Wextra -std=gnu99 -pedantic
+CFLAGS=-Wall -Wextra -std=gnu99 -pedantic -ggdb
 LDFLAGS=-lX11 -lXext
 
 sleeper:
