@@ -3,6 +3,8 @@
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <glib.h>
+#include <libupower-glib/upower.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,9 +48,13 @@ int main(int argc, char *argv[]) {
   long sleep_time;
   float diff;
   time_t last_awake, before, now;
+  // dpms
   Display *dpy;
   CARD16 power_level, prev_power_level;
   BOOL state;
+  // upower
+  UpClient *up_client;
+  gboolean on_battery, prev_on_battery;
 
   if (argc != 2)
     errx(EXIT_FAILURE, "needs 1 argument");
@@ -64,6 +70,9 @@ int main(int argc, char *argv[]) {
   if (!(dpy = XOpenDisplay(0)))
     errx(EXIT_FAILURE, "cannot open display '%s'", XDisplayName(0));
 
+  up_client = up_client_new();
+  on_battery = prev_on_battery = 0;
+
   // Unbuffer stdout
   if (setvbuf(stdout, NULL, _IONBF, 0) != 0)
     errx(EXIT_FAILURE, "setvbuf");
@@ -78,6 +87,12 @@ int main(int argc, char *argv[]) {
     diff = (now - last_awake) / 60.0f / 60.0f;
 
     DPMSInfo(dpy, &power_level, &state);
+
+    on_battery = up_client_get_on_battery(up_client);
+    if (prev_on_battery != on_battery) {
+      printf("Battery status changed to `%d`\n", on_battery);
+      prev_on_battery = on_battery;
+    }
 
     if ((now - before) > sleep_time * 2) {
       printf("Suspension sytem wake after `%.2f` hours\n", diff);

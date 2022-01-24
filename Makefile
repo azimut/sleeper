@@ -1,7 +1,13 @@
-CFLAGS=-Wall -Wextra -std=gnu99 -pedantic -ggdb
-LDFLAGS=-lX11 -lXext
+PKGS=upower-glib
+CFLAGS_COMMON=-Wall -Wextra -std=gnu99 -pedantic #-ggdb
+CFLAGS=$(CFLAGS_COMMON) $(shell pkg-config --cflags $(PKGS))
+LDFLAGS=$(shell pkg-config --libs $(PKGS)) -lX11 -lXext
 
 sleeper:
+
+.PHONY: clean
+clean:
+	rm -f ./sleeper
 
 .PHONY: install
 install:
