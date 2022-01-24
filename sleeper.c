@@ -85,13 +85,11 @@ int main(int argc, char *argv[]) {
 
     now = time(NULL);
     diff = (now - last_awake) / 60.0f / 60.0f;
-
+    on_battery = up_client_get_on_battery(up_client);
     DPMSInfo(dpy, &power_level, &state);
 
-    on_battery = up_client_get_on_battery(up_client);
     if (prev_on_battery != on_battery) {
       printf("Battery status changed to `%d`\n", on_battery);
-      prev_on_battery = on_battery;
     }
 
     if ((now - before) > sleep_time * 2) {
@@ -112,6 +110,7 @@ int main(int argc, char *argv[]) {
       last_awake = now;
     }
 
+    prev_on_battery = on_battery;
     prev_power_level = power_level;
     before = now;
   }
