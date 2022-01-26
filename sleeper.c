@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
     }
 
     if ((now - before) > sleep_time * 2) {
+      diff = (now - last_awake) / 60.0f / 60.0f;
       printf("Suspension sytem wake after `%.2f` hours\n", diff);
       checkpoint("awaketime");
       last_awake = now;
