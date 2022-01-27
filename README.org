@@ -16,11 +16,10 @@ It will print to stdout (journalctl) and into 2 files
 ** Installation
 
 #+begin_src
+# dnf install upower-devel
 $ make
-$ cp sleeper ~/bin/
-$ cp sleeper.service ~/.config/systemd/user
+$ make install
 $ systemctl --user enable sleeper
-$ systemctl --user start sleeper
 #+end_src
 
 ** References

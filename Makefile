@@ -1,17 +1,17 @@
-PKGS=upower-glib
-CFLAGS_COMMON=-Wall -Wextra -std=gnu99 -pedantic #-ggdb
-CFLAGS=$(CFLAGS_COMMON) $(shell pkg-config --cflags $(PKGS))
-LDFLAGS=$(shell pkg-config --libs $(PKGS)) -lX11 -lXext
+PKGS	:= upower-glib
+CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic $(shell pkg-config --cflags $(PKGS))
+LDFLAGS := -lX11 -lXext $(shell pkg-config --libs $(PKGS))
 
 sleeper:
 
 .PHONY: clean
 clean:
-	rm -f ./sleeper
+	rm -f sleeper
 
 .PHONY: install
 install:
-	mkdir -p ~/.config/systemd/user/
-	cp sleeper.service ~/.config/systemd/user/
+	mkdir -p $(HOME)/.config/systemd/user/
+	cp sleeper.service $(HOME)/.config/systemd/user/
 	systemctl --user stop sleeper
-	cp sleeper ~/bin/
+	cp sleeper $(HOME)/bin/
+	systemctl --user start sleeper
