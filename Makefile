@@ -11,7 +11,7 @@ clean:
 .PHONY: install
 install:
 	mkdir -p $(HOME)/.config/systemd/user/
-	cp sleeper.service $(HOME)/.config/systemd/user/
+	install -C sleeper.service $(HOME)/.config/systemd/user/
 	systemctl --user stop sleeper
 	cp sleeper $(HOME)/bin/
 	systemctl --user start sleeper
