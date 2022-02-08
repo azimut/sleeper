@@ -4,13 +4,17 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <glib.h>
-#include <libupower-glib/upower.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
+#include <upower.h>
+
+#ifndef CHECKPOINT_TIME
+#define CHECKPOINT_TIME 5.0f
+#endif
 
 void checkpoint(char *filename) {
   FILE *fd;
@@ -46,7 +50,7 @@ long string_to_long(char *arg) {
 
 int main(int argc, char *argv[]) {
   long sleep_time;
-  float diff;
+  float diff_hours;
   time_t last_awake, before, now;
   // dpms
   Display *dpy;
@@ -84,7 +88,7 @@ int main(int argc, char *argv[]) {
     sleep(sleep_time);
 
     now = time(NULL);
-    diff = (now - last_awake) / 60.0f / 60.0f;
+    diff_hours = (now - last_awake) / 60.0f / 60.0f;
     on_battery = up_client_get_on_battery(up_client);
     DPMSInfo(dpy, &power_level, &state);
 
@@ -93,21 +97,23 @@ int main(int argc, char *argv[]) {
     }
 
     if ((now - before) > sleep_time * 2) {
-      diff = (now - last_awake) / 60.0f / 60.0f;
-      printf("Suspension sytem wake after `%.2f` hours\n", diff);
+      diff_hours = (now - last_awake) / 60.0f / 60.0f;
+      printf("Suspension sytem wake after `%.2f` hours\n", diff_hours);
       checkpoint("awaketime");
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOn) && (prev_power_level != power_level)) {
-      printf("DPMS screen wake up after `%.2f` hours of sleep\n", diff);
-      checkpoint("awaketime");
+      printf("DPMS screen wake up after `%.2f` hours of sleep\n", diff_hours);
+      if (diff_hours > CHECKPOINT_TIME)
+        checkpoint("awaketime");
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
-      printf("DPMS screen sleeping after `%.2f` hours awake\n", diff);
-      checkpoint("sleeptime");
+      printf("DPMS screen sleeping after `%.2f` hours awake\n", diff_hours);
+      if (diff_hours > CHECKPOINT_TIME)
+        checkpoint("sleeptime");
       last_awake = now;
     }
 
