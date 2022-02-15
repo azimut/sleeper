@@ -9,7 +9,7 @@ clean:
 	rm -f sleeper
 
 .PHONY: install
-install:
+install: sleeper
 	mkdir -p $(HOME)/.config/systemd/user/
 	install -C sleeper.service $(HOME)/.config/systemd/user/
 	systemctl --user stop sleeper

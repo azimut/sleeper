@@ -12,11 +12,23 @@
 #include <unistd.h>
 #include <upower.h>
 
-#ifndef CHECKPOINT_TIME
-#define CHECKPOINT_TIME 5.0f
-#endif
+time_t load(char *filename) {
+  struct stat s;
+  time_t ret = time(NULL);
+  char *path;
+  path = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
+                1);
+  strcpy(path, getenv("HOME"));
+  strcat(path, "/.cache/");
+  strcat(path, filename);
+  if (stat(path, &s) == 0) {
+    ret = s.st_mtim.tv_sec;
+  }
+  free(path);
+  return ret;
+}
 
-void checkpoint(char *filename) {
+void save(char *filename) {
   FILE *fd;
   char *file;
   time_t offset;
@@ -67,7 +79,7 @@ int main(int argc, char *argv[]) {
   if (sleep_time == -1)
     errx(EXIT_FAILURE, "argv[1] invalid");
 
-  last_awake = time(NULL);
+  last_awake = load("awaketime");
   before = 0;
 
   power_level = prev_power_level = DPMSModeOn;
@@ -99,21 +111,21 @@ int main(int argc, char *argv[]) {
     if ((now - before) > sleep_time * 2) {
       diff_hours = (now - last_awake) / 60.0f / 60.0f;
       printf("Suspension sytem wake after `%.2f` hours\n", diff_hours);
-      checkpoint("awaketime");
+      save("awaketime");
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOn) && (prev_power_level != power_level)) {
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", diff_hours);
-      if (diff_hours > CHECKPOINT_TIME)
-        checkpoint("awaketime");
+      if (diff_hours > 5.0f)
+        save("awaketime");
       last_awake = now;
     }
 
     if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
       printf("DPMS screen sleeping after `%.2f` hours awake\n", diff_hours);
-      if (diff_hours > CHECKPOINT_TIME)
-        checkpoint("sleeptime");
+      if (diff_hours > 1.0f)
+        save("sleeptime");
       last_awake = now;
     }
 
