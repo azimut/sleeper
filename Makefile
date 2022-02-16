@@ -1,7 +1,7 @@
 PKGS	:= upower-glib
 CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic $(shell pkg-config --cflags $(PKGS))
 LDFLAGS := -lX11 -lXext $(shell pkg-config --libs $(PKGS))
-SRCS    := main.c
+SRCS    := main.c file.c
 
 sleeper: $(SRCS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
