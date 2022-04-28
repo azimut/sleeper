@@ -27,9 +27,10 @@ long string_to_long(char *arg) {
 }
 
 int main(int argc, char *argv[]) {
-  long sleep_time;
+  long sleep_seconds;
   float diff_hours;
-  time_t last_awake, before, now;
+  time_t last_awake;
+  time_t before, now;
   // dpms
   Display *dpy;
   CARD16 power_level, prev_power_level;
@@ -41,8 +42,8 @@ int main(int argc, char *argv[]) {
   if (argc != 2)
     errx(EXIT_FAILURE, "needs 1 argument");
 
-  sleep_time = string_to_long(argv[1]);
-  if (sleep_time == -1)
+  sleep_seconds = string_to_long(argv[1]);
+  if (sleep_seconds == -1)
     errx(EXIT_FAILURE, "argv[1] invalid");
 
   last_awake = load("awaketime");
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
   chdir("/");
 
   while (1) {
-    sleep(sleep_time);
+    sleep(sleep_seconds);
 
     now = time(NULL);
     diff_hours = (now - last_awake) / 60.0f / 60.0f;
@@ -74,7 +75,7 @@ int main(int argc, char *argv[]) {
       printf("Battery status changed to `%d`\n", on_battery);
     }
 
-    if ((now - before) > sleep_time * 2) {
+    if ((now - before) > sleep_seconds * 2) {
       diff_hours = (now - last_awake) / 60.0f / 60.0f;
       printf("Suspension sytem wake after `%.2f` hours\n", diff_hours);
       save("awaketime");
@@ -99,6 +100,5 @@ int main(int argc, char *argv[]) {
     prev_power_level = power_level;
     before = now;
   }
-
   return EXIT_SUCCESS;
 }
