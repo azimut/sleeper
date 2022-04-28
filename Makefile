@@ -7,8 +7,7 @@ sleeper: $(SRCS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 .PHONY: clean
-clean:
-	rm -f sleeper
+clean: ; rm -f sleeper
 
 .PHONY: install
 install: sleeper
@@ -17,3 +16,6 @@ install: sleeper
 	systemctl --user stop sleeper
 	cp sleeper $(HOME)/bin/
 	systemctl --user start sleeper
+
+compile_commands.json:
+	bear make
