@@ -1,5 +1,5 @@
 #ifndef FILE_INC
-#define FILE_INF
+#define FILE_INC
 
 #include <time.h>
 
