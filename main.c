@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   // dpms
   Display *dpy;
   CARD16 power_level, prev_power_level;
-  BOOL state;
+  BOOL dpms_state;
   // upower
   UpClient *up_client;
   gboolean on_battery, prev_on_battery;
@@ -87,17 +87,18 @@ int main(int argc, char *argv[]) {
     now = time(NULL);
 
     on_battery = up_client_get_on_battery(up_client);
-    DPMSInfo(dpy, &power_level, &state);
+    DPMSInfo(dpy, &power_level, &dpms_state);
 
     if (prev_on_battery != on_battery)
       printf("Battery status changed to `%d`\n", on_battery);
 
-    if (suspension_wake(now, before, sleep_seconds)) {
+    if (suspension_wake(now, before, sleep_seconds) && before != 0) {
       last_sleep = before;
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
       printf("Suspension sytem wake after `%.2f` hours\n", dt);
-      save("awaketime");
+      if (dt > 5.0f)
+        save("awaketime");
     }
 
     if (dpms_wake(prev_power_level, power_level)) {
