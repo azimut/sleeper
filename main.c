@@ -26,10 +26,25 @@ long string_to_long(char *arg) {
   return ret;
 }
 
+float dt_hours(time_t a, time_t b) { return (a - b) / 60.0f / 60.0f; }
+
+int dpms_wake(CARD16 prev_pw, CARD16 pw) {
+  return (pw == DPMSModeOn) && (prev_pw != pw);
+}
+
+int dpms_sleep(CARD16 prev_pw, CARD16 pw) {
+  return (pw == DPMSModeOff) && (prev_pw != pw);
+}
+
+int suspension_wake(time_t now, time_t before, long sleep_seconds) {
+  return (now - before) > sleep_seconds * 2;
+}
+
 int main(int argc, char *argv[]) {
   long sleep_seconds;
-  float diff_hours;
-  time_t last_awake;
+  float dt;
+  time_t last_wakeup;
+  time_t last_sleep;
   time_t before, now;
   // dpms
   Display *dpy;
@@ -46,7 +61,8 @@ int main(int argc, char *argv[]) {
   if (sleep_seconds == -1)
     errx(EXIT_FAILURE, "argv[1] invalid");
 
-  last_awake = load("awaketime");
+  last_wakeup = load("awaketime");
+  last_sleep = load("sleeptime");
   before = 0;
 
   power_level = prev_power_level = DPMSModeOn;
@@ -63,37 +79,41 @@ int main(int argc, char *argv[]) {
   umask(0);
   chdir("/");
 
+  printf("Starting loop...\n");
+
   while (1) {
     sleep(sleep_seconds);
 
     now = time(NULL);
-    diff_hours = (now - last_awake) / 60.0f / 60.0f;
+
     on_battery = up_client_get_on_battery(up_client);
     DPMSInfo(dpy, &power_level, &state);
 
-    if (prev_on_battery != on_battery) {
+    if (prev_on_battery != on_battery)
       printf("Battery status changed to `%d`\n", on_battery);
-    }
 
-    if ((now - before) > sleep_seconds * 2) {
-      diff_hours = (now - last_awake) / 60.0f / 60.0f;
-      printf("Suspension sytem wake after `%.2f` hours\n", diff_hours);
+    if (suspension_wake(now, before, sleep_seconds)) {
+      last_sleep = before;
+      last_wakeup = now;
+      dt = dt_hours(last_wakeup, last_sleep);
+      printf("Suspension sytem wake after `%.2f` hours\n", dt);
       save("awaketime");
-      last_awake = now;
     }
 
-    if ((power_level == DPMSModeOn) && (prev_power_level != power_level)) {
-      printf("DPMS screen wake up after `%.2f` hours of sleep\n", diff_hours);
-      if (diff_hours > 5.0f)
+    if (dpms_wake(prev_power_level, power_level)) {
+      dt = dt_hours(now, last_sleep);
+      printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
+      if (dt > 5.0f)
         save("awaketime");
-      last_awake = now;
+      last_wakeup = now;
     }
 
-    if ((power_level == DPMSModeOff) && (prev_power_level != power_level)) {
-      printf("DPMS screen sleeping after `%.2f` hours awake\n", diff_hours);
-      if (diff_hours > 1.0f)
+    if (dpms_sleep(prev_power_level, power_level)) {
+      dt = dt_hours(now, last_wakeup);
+      printf("DPMS screen sleeping after `%.2f` hours awake\n", dt);
+      if (dt > 5.0f)
         save("sleeptime");
-      last_awake = now;
+      last_sleep = now;
     }
 
     prev_on_battery = on_battery;
