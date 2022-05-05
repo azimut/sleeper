@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <glib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,16 +29,16 @@ long string_to_long(char *arg) {
 
 float dt_hours(time_t a, time_t b) { return (a - b) / 60.0f / 60.0f; }
 
-int dpms_wake(CARD16 prev_pw, CARD16 pw) {
+bool dpms_wake(CARD16 prev_pw, CARD16 pw) {
   return (pw == DPMSModeOn) && (prev_pw != pw);
 }
 
-int dpms_sleep(CARD16 prev_pw, CARD16 pw) {
+bool dpms_sleep(CARD16 prev_pw, CARD16 pw) {
   return (pw == DPMSModeOff) && (prev_pw != pw);
 }
 
-int suspension_wake(time_t now, time_t before, long sleep_seconds) {
-  return (now - before) > sleep_seconds * 2;
+bool suspension_wake(time_t a, time_t b, long sleep_seconds) {
+  return (a - b) > (sleep_seconds * 3);
 }
 
 int main(int argc, char *argv[]) {
