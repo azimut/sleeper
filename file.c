@@ -22,11 +22,9 @@ time_t load(char *filename) {
   return ret;
 }
 
-void save(char *filename) {
+void save(char *filename, time_t offset) {
   FILE *fd;
   char *file;
-  time_t offset;
-  offset = time(NULL);
   file = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
                 1);
   strcpy(file, getenv("HOME"));

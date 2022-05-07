@@ -98,24 +98,26 @@ int main(int argc, char *argv[]) {
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
       printf("Suspension sytem wake after `%.2f` hours\n", dt);
-      if (dt > 5.0f)
-        save("awaketime");
+      if (dt > 5.0f) {
+        save("awaketime", last_wakeup);
+        save("sleeptime", last_sleep);
+      }
     }
 
     if (dpms_wake(prev_power_level, power_level)) {
+      last_wakeup = now;
       dt = dt_hours(now, last_sleep);
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
       if (dt > 5.0f)
-        save("awaketime");
-      last_wakeup = now;
+        save("awaketime", last_wakeup);
     }
 
     if (dpms_sleep(prev_power_level, power_level)) {
+      last_sleep = now;
       dt = dt_hours(now, last_wakeup);
       printf("DPMS screen sleeping after `%.2f` hours awake\n", dt);
       if (dt > 5.0f)
-        save("sleeptime");
-      last_sleep = now;
+        save("sleeptime", last_sleep);
     }
 
     prev_on_battery = on_battery;

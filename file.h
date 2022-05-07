@@ -4,6 +4,6 @@
 #include <time.h>
 
 time_t load(char *filename);
-void save(char *filename);
+void save(char *filename, time_t offset);
 
 #endif
