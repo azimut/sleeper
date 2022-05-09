@@ -5,36 +5,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <utime.h>
 
-time_t load(char *filename) {
-  struct stat s;
-  time_t ret = time(NULL);
+char *fullpath(char *filename) {
   char *path;
   path = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
                 1);
   strcpy(path, getenv("HOME"));
   strcat(path, "/.cache/");
   strcat(path, filename);
+  return path;
+}
+
+time_t load(char *filename) {
+  struct stat s;
+  time_t ret;
+  char *path = fullpath(filename);
   if (stat(path, &s) == 0) {
     ret = s.st_mtim.tv_sec;
+  } else {
+    ret = time(NULL);
   }
   free(path);
   return ret;
 }
 
 void save(char *filename, time_t offset) {
-  FILE *fd;
-  char *file;
-  file = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
-                1);
-  strcpy(file, getenv("HOME"));
-  strcat(file, "/.cache/");
-  strcat(file, filename);
-  fd = fopen(file, "a");
-  if (fd == NULL)
-    errx(EXIT_FAILURE, "opening file: %d", errno);
-  putw(offset, fd);
-  fclose(fd);
-  free(file);
+  char *path = fullpath(filename);
+  struct utimbuf t;
+  t.actime = offset;
+  t.modtime = offset;
+  utime(path, &t);
+  free(path);
   return;
 }
