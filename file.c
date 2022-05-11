@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <utime.h>
 
-char *fullpath(char *filename) {
+static char *fullpath(char *filename) {
   char *path;
   path = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
                 1);
