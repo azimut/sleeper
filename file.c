@@ -20,23 +20,17 @@ static char *fullpath(char *filename) {
 
 time_t load(char *filename) {
   struct stat s;
-  time_t ret;
+  time_t ret = time(NULL);
   char *path = fullpath(filename);
-  if (stat(path, &s) == 0) {
+  if (stat(path, &s) == 0)
     ret = s.st_mtim.tv_sec;
-  } else {
-    ret = time(NULL);
-  }
   free(path);
   return ret;
 }
 
 void save(char *filename, time_t offset) {
+  struct utimbuf t = {offset, offset};
   char *path = fullpath(filename);
-  struct utimbuf t;
-  t.actime = offset;
-  t.modtime = offset;
   utime(path, &t);
   free(path);
-  return;
 }
