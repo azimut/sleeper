@@ -17,5 +17,8 @@ install: sleeper
 	cp sleeper $(HOME)/bin/
 	systemctl --user start sleeper
 
+.PHONY: deps
+deps: ; sudo dnf install -y upower-devel
+
 compile_commands.json:
 	bear make
