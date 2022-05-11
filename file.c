@@ -1,4 +1,4 @@
-#include "file.h"
+#include "./file.h"
 #include <err.h>
 #include <errno.h>
 #include <stdio.h>

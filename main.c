@@ -1,4 +1,4 @@
-#include "file.h"
+#include "./file.h"
 #include <X11/Xlib.h>
 #include <X11/extensions/dpms.h>
 #include <err.h>
