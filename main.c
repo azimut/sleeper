@@ -15,21 +15,9 @@
 #include <unistd.h>
 #include <upower.h>
 
+#define SLEEP_TIME 60
 #define SLEEP_FILE "sleeptime"
 #define AWAKE_FILE "awaketime"
-
-long string_to_long(char *arg) {
-  long ret;
-  char *p;
-  if (strlen(arg) == 0)
-    return -1;
-  ret = strtol(arg, &p, 10);
-  if (*p != '\0' || errno != 0)
-    return -1;
-  if (ret <= 0)
-    return -1;
-  return ret;
-}
 
 float dt_hours(time_t a, time_t b) { return (a - b) / 60.0f / 60.0f; }
 
@@ -41,12 +29,9 @@ bool dpms_sleep(CARD16 prev_pw, CARD16 pw) {
   return (pw == DPMSModeOff) && (prev_pw != pw);
 }
 
-bool suspension_wake(time_t a, time_t b, long sleep_seconds) {
-  return (a - b) > (sleep_seconds * 3);
-}
+bool suspension_wake(time_t a, time_t b) { return (a - b) > (SLEEP_TIME * 3); }
 
-int main(int argc, char *argv[]) {
-  long sleep_seconds;
+int main() {
   float dt;
   time_t last_wakeup;
   time_t last_sleep;
@@ -58,13 +43,6 @@ int main(int argc, char *argv[]) {
   // upower
   UpClient *up_client;
   gboolean on_battery, prev_on_battery;
-
-  if (argc != 2)
-    errx(EXIT_FAILURE, "needs 1 argument");
-
-  sleep_seconds = string_to_long(argv[1]);
-  if (sleep_seconds == -1)
-    errx(EXIT_FAILURE, "argv[1] invalid");
 
   last_wakeup = load(AWAKE_FILE);
   last_sleep = load(SLEEP_FILE);
@@ -87,7 +65,7 @@ int main(int argc, char *argv[]) {
   printf("Starting loop...\n");
 
   while (1) {
-    sleep(sleep_seconds);
+    sleep(SLEEP_TIME);
 
     now = time(NULL);
 
@@ -97,7 +75,7 @@ int main(int argc, char *argv[]) {
     if (prev_on_battery != on_battery)
       printf("Battery status changed to `%d`\n", on_battery);
 
-    if (suspension_wake(now, before, sleep_seconds) && before != 0) {
+    if (suspension_wake(now, before) && before != 0) {
       last_sleep = before;
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
