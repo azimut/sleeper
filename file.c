@@ -26,7 +26,7 @@ static void create_if_missing(char *path) {
   if ((fd = creat(path, 0666)) == 0)
     close(fd);
   else
-    err(1, "failed to creat()");
+    err(EXIT_FAILURE, "failed to creat()");
 }
 
 time_t load(char *filename) {
@@ -37,7 +37,7 @@ time_t load(char *filename) {
   if (stat(path, &s) == 0)
     ret = s.st_mtim.tv_sec;
   else
-    err(1, "failed to stat()");
+    err(EXIT_FAILURE, "failed to stat()");
   free(path);
   return ret;
 }
@@ -46,6 +46,6 @@ void save(char *filename, time_t offset) {
   struct utimbuf t = {offset, offset};
   char *path = fullpath(filename);
   if (utime(path, &t) < 0)
-    err(1, "failed to utime()");
+    err(EXIT_FAILURE, "failed to utime()");
   free(path);
 }
