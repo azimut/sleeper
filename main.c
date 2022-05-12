@@ -1,4 +1,5 @@
 #include "./file.h"
+
 #include <X11/Xlib.h>
 #include <X11/extensions/dpms.h>
 #include <err.h>
@@ -13,6 +14,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <upower.h>
+
+#define SLEEP_FILE "sleeptime"
+#define AWAKE_FILE "awaketime"
 
 long string_to_long(char *arg) {
   long ret;
@@ -62,8 +66,8 @@ int main(int argc, char *argv[]) {
   if (sleep_seconds == -1)
     errx(EXIT_FAILURE, "argv[1] invalid");
 
-  last_wakeup = load("awaketime");
-  last_sleep = load("sleeptime");
+  last_wakeup = load(AWAKE_FILE);
+  last_sleep = load(SLEEP_FILE);
   before = 0;
 
   power_level = prev_power_level = DPMSModeOn;
@@ -99,8 +103,8 @@ int main(int argc, char *argv[]) {
       dt = dt_hours(last_wakeup, last_sleep);
       printf("Suspension sytem wake after `%.2f` hours\n", dt);
       if (dt > 5.0f) {
-        save("awaketime", last_wakeup);
-        save("sleeptime", last_sleep);
+        save(AWAKE_FILE, last_wakeup);
+        save(SLEEP_FILE, last_sleep);
       }
     }
 
@@ -109,7 +113,7 @@ int main(int argc, char *argv[]) {
       dt = dt_hours(now, last_sleep);
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
       if (dt > 5.0f)
-        save("awaketime", last_wakeup);
+        save(AWAKE_FILE, last_wakeup);
     }
 
     if (dpms_sleep(prev_power_level, power_level)) {
@@ -117,7 +121,7 @@ int main(int argc, char *argv[]) {
       dt = dt_hours(now, last_wakeup);
       printf("DPMS screen sleeping after `%.2f` hours awake\n", dt);
       if (dt > 5.0f)
-        save("sleeptime", last_sleep);
+        save(SLEEP_FILE, last_sleep);
     }
 
     prev_on_battery = on_battery;
