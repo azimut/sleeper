@@ -1,3 +1,4 @@
+#include "./config.h"
 #include "./file.h"
 
 #include <X11/Xlib.h>
@@ -14,10 +15,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <upower.h>
-
-#define SLEEP_TIME 60
-#define SLEEP_FILE "sleeptime"
-#define AWAKE_FILE "awaketime"
 
 float dt_hours(time_t a, time_t b) { return (a - b) / 60.0f / 60.0f; }
 
@@ -80,7 +77,7 @@ int main() {
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
       printf("Suspension sytem wake after `%.2f` hours\n", dt);
-      if (dt > 5.0f) {
+      if (dt > DT_SUSPENSION) {
         save(AWAKE_FILE, last_wakeup);
         save(SLEEP_FILE, last_sleep);
       }
@@ -90,7 +87,7 @@ int main() {
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
-      if (dt > 5.0f) {
+      if (dt > DT_DPMS) {
         save(SLEEP_FILE, last_sleep);
         save(AWAKE_FILE, last_wakeup);
       }

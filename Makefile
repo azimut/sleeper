@@ -3,7 +3,7 @@ CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic $(shell pkg-config --cflags $(PKGS)
 LDFLAGS := -lX11 -lXext $(shell pkg-config --libs $(PKGS))
 SRCS    := main.c file.c
 
-sleeper: $(SRCS)
+sleeper: $(SRCS) config.h
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 .PHONY: clean
