@@ -88,18 +88,18 @@ int main() {
 
     if (dpms_wake(prev_power_level, power_level)) {
       last_wakeup = now;
-      dt = dt_hours(now, last_sleep);
+      dt = dt_hours(last_wakeup, last_sleep);
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
-      if (dt > 5.0f)
+      if (dt > 5.0f) {
+        save(SLEEP_FILE, last_sleep);
         save(AWAKE_FILE, last_wakeup);
+      }
     }
 
     if (dpms_sleep(prev_power_level, power_level)) {
       last_sleep = now;
-      dt = dt_hours(now, last_wakeup);
-      printf("DPMS screen sleeping after `%.2f` hours awake\n", dt);
-      if (dt > 5.0f)
-        save(SLEEP_FILE, last_sleep);
+      printf("DPMS screen sleeping after `%.2f` hours awake\n",
+             dt_hours(last_sleep, last_wakeup));
     }
 
     prev_on_battery = on_battery;
