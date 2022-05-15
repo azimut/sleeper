@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/extensions/dpms.h>
+#include <assert.h>
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -26,7 +27,16 @@ bool dpms_sleep(CARD16 prev_pw, CARD16 pw) {
   return (pw == DPMSModeOff) && (prev_pw != pw);
 }
 
-bool suspension_wake(time_t a, time_t b) { return (a - b) > (SLEEP_TIME * 3); }
+bool suspension_wake(time_t now, time_t before) {
+  assert(now > before);
+  return ((now - before) > (SLEEP_TIME * 3)) && before != 0;
+}
+
+bool looping = true;
+void stop(__attribute__((unused)) int sig) {
+  printf("Stopping loop...\n");
+  looping = false;
+}
 
 int main() {
   float dt;
@@ -59,9 +69,11 @@ int main() {
   umask(0);
   chdir("/");
 
+  signal(SIGTERM, stop);
+
   printf("Starting loop...\n");
 
-  while (1) {
+  while (looping) {
     sleep(SLEEP_TIME);
 
     now = time(NULL);
@@ -72,7 +84,7 @@ int main() {
     if (prev_on_battery != on_battery)
       printf("Battery status changed to `%d`\n", on_battery);
 
-    if (suspension_wake(now, before) && before != 0) {
+    if (suspension_wake(now, before)) {
       last_sleep = before;
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
@@ -103,5 +115,6 @@ int main() {
     prev_power_level = power_level;
     before = now;
   }
+  XCloseDisplay(dpy);
   return EXIT_SUCCESS;
 }
