@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <utime.h>
 
-static char *fullpath(char *filename) {
+static char *fullpath(const char *filename) {
   char *path;
   path = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
                 1);
@@ -19,7 +19,7 @@ static char *fullpath(char *filename) {
   return path;
 }
 
-static void create_if_missing(char *path) {
+static void create_if_missing(const char *path) {
   int fd;
   if (access(path, F_OK) == 0)
     return;
@@ -29,7 +29,7 @@ static void create_if_missing(char *path) {
     err(EXIT_FAILURE, "failed to creat()");
 }
 
-time_t load(char *filename) {
+time_t load(const char *filename) {
   struct stat s;
   time_t ret = time(NULL);
   char *path = fullpath(filename);
@@ -42,7 +42,7 @@ time_t load(char *filename) {
   return ret;
 }
 
-void save(char *filename, time_t offset) {
+void save(const char *filename, time_t offset) {
   struct utimbuf t = {offset, offset};
   char *path = fullpath(filename);
   if (utime(path, &t) < 0)
