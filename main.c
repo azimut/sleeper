@@ -16,11 +16,11 @@
 #include <unistd.h>
 #include <upower.h>
 
-bool looping = true;
+bool quit = false;
 
 void stop(__attribute__((unused)) int sig) {
   printf("Stopping loop...\n");
-  looping = false;
+  quit = true;
 }
 
 float dt_hours(time_t a, time_t b) { return (a - b) / 60.0f / 60.0f; }
@@ -42,36 +42,39 @@ int main() {
   time_t last_wakeup = load(AWAKE_FILE);
   time_t last_sleep = load(SLEEP_FILE);
   time_t before = 0, now;
-  // dpms
-  Display *display;
-  CARD16 power_level = DPMSModeOn, prev_power_level = DPMSModeOn;
-  BOOL dpms_state;
-  // upower
-  UpClient *up_client = up_client_new();
-  gboolean on_battery = 0, prev_on_battery = 0;
 
-  display = XOpenDisplay(0);
-  if (!display)
+  Display *dpms_display;
+  CARD16 dpms_mode = DPMSModeOn, dpms_prev_mode = DPMSModeOn;
+  BOOL dpms_state;
+
+  UpClient *upower_client = up_client_new();
+  gboolean upower_battery = 0, upower_prev_battery = 0;
+
+  dpms_display = XOpenDisplay(0);
+  if (!dpms_display)
     errx(EXIT_FAILURE, "cannot open display '%s'", XDisplayName(0));
 
   // Unbuffer stdout
   if (setvbuf(stdout, NULL, _IONBF, 0) != 0)
-    errx(EXIT_FAILURE, "setvbuf");
+    err(EXIT_FAILURE, "setvbuf");
 
   umask(0);
   chdir("/");
   signal(SIGTERM, stop);
   printf("Starting loop...\n");
 
-  while (looping) {
+  while (!quit) {
     sleep(WHILE_SLEEP_TIME);
 
+    upower_prev_battery = upower_battery;
+    dpms_prev_mode = dpms_mode;
+    before = now;
     now = time(NULL);
-    on_battery = up_client_get_on_battery(up_client);
-    DPMSInfo(display, &power_level, &dpms_state);
+    upower_battery = up_client_get_on_battery(upower_client);
+    DPMSInfo(dpms_display, &dpms_mode, &dpms_state);
 
-    if (prev_on_battery != on_battery)
-      printf("Battery status changed to `%d`\n", on_battery);
+    if (upower_prev_battery != upower_battery)
+      printf("Battery status changed to `%d`\n", upower_battery);
 
     if (suspension_wake(now, before)) {
       last_sleep = before;
@@ -84,7 +87,7 @@ int main() {
       }
     }
 
-    if (dpms_wake(prev_power_level, power_level)) {
+    if (dpms_wake(dpms_prev_mode, dpms_mode)) {
       last_wakeup = now;
       dt = dt_hours(last_wakeup, last_sleep);
       printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
@@ -94,16 +97,12 @@ int main() {
       }
     }
 
-    if (dpms_sleep(prev_power_level, power_level)) {
+    if (dpms_sleep(dpms_prev_mode, dpms_mode)) {
       last_sleep = now;
       printf("DPMS screen sleeping after `%.2f` hours awake\n",
              dt_hours(last_sleep, last_wakeup));
     }
-
-    prev_on_battery = on_battery;
-    prev_power_level = power_level;
-    before = now;
   }
-  XCloseDisplay(display);
+  XCloseDisplay(dpms_display);
   return EXIT_SUCCESS;
 }
