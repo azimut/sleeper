@@ -50,6 +50,6 @@ int main() {
     suspension_check(now, before, &last_sleep, &last_wakeup);
   }
 
-  XCloseDisplay(dpms_state.display);
+  dpms_free(&dpms_state);
   return EXIT_SUCCESS;
 }

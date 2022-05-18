@@ -3,7 +3,7 @@
 
 #include <time.h>
 
-extern time_t load(const char *filename);
-extern void save(const char *filename, time_t offset);
+time_t load(const char *filename);
+void save(const char *filename, time_t offset);
 
-#endif
+#endif /* FILE_H_ */

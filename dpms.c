@@ -47,3 +47,5 @@ void dpms_check(DPMSState s, time_t now, time_t *last_sleep,
     printf("DPMS screen sleeping after `%.2f` hours awake\n", dt);
   }
 }
+
+void dpms_free(DPMSState *s) { XCloseDisplay(s->display); }

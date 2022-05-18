@@ -14,5 +14,6 @@ DPMSState dpms_new(void);
 void dpms_update(DPMSState *s);
 void dpms_check(DPMSState s, time_t now, time_t *last_sleep,
                 time_t *last_wakeup);
+void dpms_free(DPMSState *s);
 
 #endif /* DPMS_H */
