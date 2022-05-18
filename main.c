@@ -41,11 +41,11 @@ int main() {
   float dt;
   time_t last_wakeup = load(AWAKE_FILE);
   time_t last_sleep = load(SLEEP_FILE);
-  time_t before = 0, now;
+  time_t before = 0, now = time(NULL);
 
   Display *dpms_display;
   CARD16 dpms_mode = DPMSModeOn, dpms_prev_mode = DPMSModeOn;
-  BOOL dpms_state;
+  BOOL dpms_state = 0;
 
   UpClient *upower_client = up_client_new();
   gboolean upower_battery = 0, upower_prev_battery = 0;
