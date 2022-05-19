@@ -16,7 +16,9 @@ It will print to stdout (journalctl) and into 2 files
 ** Installation
 
 #+begin_src
-# dnf install upower-devel
+psql> CREATE DATABASE activity;
+psql> create table events (etype varchar(128) not null, created_at timestamp with time zone not null);
+$ make deps
 $ make
 $ make install
 $ systemctl --user enable sleeper

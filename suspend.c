@@ -1,6 +1,7 @@
 #include "./suspend.h"
 #include "./config.h"
 #include "./file.h"
+#include "./sql.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -22,6 +23,8 @@ void suspension_check(time_t now, time_t before, time_t *last_sleep,
     if (dt > DT_SUSPENSION) {
       save(AWAKE_FILE, *last_wakeup);
       save(SLEEP_FILE, *last_sleep);
+      sql_insert_awake(*last_wakeup);
+      sql_insert_sleep(*last_sleep);
     }
   }
 }

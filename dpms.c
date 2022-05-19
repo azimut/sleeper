@@ -1,6 +1,7 @@
 #include "./dpms.h"
 #include "./config.h"
 #include "./file.h"
+#include "./sql.h"
 
 #include <err.h>
 #include <stdbool.h>
@@ -39,6 +40,8 @@ void dpms_check(DPMSState s, time_t now, time_t *last_sleep,
     if (dt > DT_DPMS) {
       save(SLEEP_FILE, *last_sleep);
       save(AWAKE_FILE, *last_wakeup);
+      sql_insert_sleep(*last_sleep);
+      sql_insert_awake(*last_wakeup);
     }
   }
   if (dpms_sleep(s.prev_mode, s.mode)) {

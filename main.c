@@ -1,6 +1,7 @@
 #include "./config.h"
 #include "./dpms.h"
 #include "./file.h"
+#include "./sql.h"
 #include "./suspend.h"
 #include "./upower.h"
 
@@ -34,6 +35,7 @@ int main() {
   umask(0);
   chdir("/");
   signal(SIGTERM, stop);
+  sql_ping();
   printf("Starting loop...\n");
 
   while (!quit) {

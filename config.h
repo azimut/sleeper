@@ -1,6 +1,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#define SQL_CONNECT "user=postgres dbname=activity"
+
 #define WHILE_SLEEP_TIME 60
 
 #define DT_DPMS       5.0f
