@@ -28,10 +28,9 @@ static void insert(time_t time, const char *event) {
   const char *date = ctime(&time);
   if (!date)
     err(EXIT_FAILURE, "failed to ctime()");
+  const char *args[2] = {event, date};
 
   PGconn *conn = new ();
-
-  const char *args[2] = {date, event};
   PGresult *res =
       PQexecParams(conn, "INSERT INTO events(etype, created_at) VALUES($1,$2)",
                    2, NULL, args, NULL, NULL, 0);
