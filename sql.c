@@ -24,15 +24,15 @@ static PGconn *new (void) {
   return conn;
 }
 
-static void insert(time_t time, const char *event) {
-  const char *date = ctime(&time);
-  if (!date)
+static void insert(time_t time, const char *etype) {
+  const char *created_at = ctime(&time);
+  if (!created_at)
     err(EXIT_FAILURE, "failed to ctime()");
 
   PGconn *conn = new ();
   PGresult *res =
       PQexecParams(conn, "INSERT INTO events(etype, created_at) VALUES($1,$2)",
-                   2, NULL, (const char *[]){event, date}, NULL, NULL, 0);
+                   2, NULL, (const char *[]){etype, created_at}, NULL, NULL, 0);
   if (PQresultStatus(res) != PGRES_COMMAND_OK)
     do_exit(conn, res);
 
