@@ -2,10 +2,11 @@ CC      := clang
 PKGS	:= upower-glib libpq
 CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic $(shell pkg-config --cflags $(PKGS))
 LDFLAGS := -lX11 -lXext $(shell pkg-config --libs $(PKGS))
-SRCS    := main.c file.c dpms.c upower.c suspend.c sql.c
+SRC     := $(wildcard src/*.c)
+HDR     := $(wildcard src/*.h)
 
-sleeper: $(SRCS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+sleeper: $(SRC) $(HDR)
+	$(CC) $(CFLAGS) -o $@ $(SRC) $(LDFLAGS)
 
 .PHONY: clean
 clean: ; rm -f sleeper
