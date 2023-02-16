@@ -1,6 +1,6 @@
 CC      := clang
 PKGS	:= upower-glib libpq
-CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic $(shell pkg-config --cflags $(PKGS))
+CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic -ggdb $(shell pkg-config --cflags $(PKGS))
 LDFLAGS := -lX11 -lXext $(shell pkg-config --libs $(PKGS))
 SRC     := $(wildcard src/*.c)
 HDR     := $(wildcard src/*.h)
