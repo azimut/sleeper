@@ -26,12 +26,10 @@ static PGconn *new (void) {
 }
 
 static void insert(const char *sleep_at, const char *wakeup_at, const char *diff) {
+  const char *query = "INSERT INTO events(sleep_at, wakeup_at, diff) VALUES($1,$2,$3)";
+  const char *args[3] = {sleep_at, wakeup_at, diff};
   PGconn *conn = new ();
-  PGresult *res =
-      PQexecParams(conn,
-                   "INSERT INTO events(sleep_at, wakeup_at, diff) "
-                   "VALUES($1,$2,$3)",
-                   2, NULL, (const char *[]){sleep_at, wakeup_at, diff}, NULL, NULL, 0);
+  PGresult *res = PQexecParams(conn, query, sizeof(args), NULL, args, NULL, NULL, 0);
   if (PQresultStatus(res) != PGRES_COMMAND_OK)
     do_exit(conn, res);
 
