@@ -11,8 +11,7 @@
 
 static char *fullpath(const char *filename) {
   char *path;
-  path = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) +
-                1);
+  path = malloc(strlen(getenv("HOME")) + strlen("/.cache/") + strlen(filename) + 1);
   strcpy(path, getenv("HOME"));
   strcat(path, "/.cache/");
   strcat(path, filename);

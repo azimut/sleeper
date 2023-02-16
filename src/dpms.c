@@ -30,8 +30,7 @@ static bool dpms_sleep(CARD16 prev_pw, CARD16 pw) {
   return (pw == DPMSModeOff) && (prev_pw != pw);
 }
 
-void dpms_check(DPMSState s, time_t now, time_t *last_sleep,
-                time_t *last_wakeup) {
+void dpms_check(DPMSState s, time_t now, time_t *last_sleep, time_t *last_wakeup) {
   float dt;
   if (dpms_wake(s.prev_mode, s.mode)) {
     *last_wakeup = now;
@@ -40,8 +39,7 @@ void dpms_check(DPMSState s, time_t now, time_t *last_sleep,
     if (dt > DT_DPMS) {
       save(SLEEP_FILE, *last_sleep);
       save(AWAKE_FILE, *last_wakeup);
-      sql_insert_sleep(*last_sleep);
-      sql_insert_awake(*last_wakeup);
+      sql_insert_event(*last_sleep, *last_wakeup);
     }
   }
   if (dpms_sleep(s.prev_mode, s.mode)) {
