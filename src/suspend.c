@@ -23,7 +23,7 @@ void suspension_check(time_t now, time_t before, time_t *last_sleep,
     if (dt > DT_SUSPENSION) {
       save(AWAKE_FILE, *last_wakeup);
       save(SLEEP_FILE, *last_sleep);
-      sql_insert_event(*last_sleep, *last_wakeup);
+      sql_insert_event("suspension", *last_sleep, *last_wakeup);
     }
   }
 }

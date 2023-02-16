@@ -36,6 +36,7 @@ int main() {
   chdir("/");
   signal(SIGTERM, stop);
   sql_ping();
+  sql_insert_event("startup", now, now);
   printf("Starting loop...\n");
 
   while (!quit) {

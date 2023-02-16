@@ -25,11 +25,13 @@ static PGconn *new (void) {
   return conn;
 }
 
-static void insert(const char *sleep_at, const char *wakeup_at, const char *diff) {
-  const char *query = "INSERT INTO events(sleep_at, wakeup_at, diff) VALUES($1,$2,$3)";
-  const char *args[3] = {sleep_at, wakeup_at, diff};
+static void insert(const char *etype, const char *sleep_at, const char *wakeup_at,
+                   const char *diff) {
+  const char *query =
+      "INSERT INTO events(etype, sleep_at, wakeup_at, diff) VALUES($1,$2,$3,$4)";
+  const char *args[4] = {etype, sleep_at, wakeup_at, diff};
   PGconn *conn = new ();
-  PGresult *res = PQexecParams(conn, query, sizeof(args), NULL, args, NULL, NULL, 0);
+  PGresult *res = PQexecParams(conn, query, 4, NULL, args, NULL, NULL, 0);
   if (PQresultStatus(res) != PGRES_COMMAND_OK)
     do_exit(conn, res);
 
@@ -37,7 +39,7 @@ static void insert(const char *sleep_at, const char *wakeup_at, const char *diff
   PQfinish(conn);
 }
 
-void sql_insert_event(const time_t sleep, const time_t wakeup) {
+void sql_insert_event(const char *etype, const time_t sleep, const time_t wakeup) {
   const char *sleep_at = ctime(&sleep);
   if (!sleep_at)
     err(EXIT_FAILURE, "failed to ctime() sleep");
@@ -47,13 +49,13 @@ void sql_insert_event(const time_t sleep, const time_t wakeup) {
     err(EXIT_FAILURE, "failed to ctime() wakeup");
 
   const double rawdiff = difftime(wakeup, sleep);
-  assert(rawdiff > 0);
+  assert(rawdiff >= 0);
 
   char diff[128];
   if (sprintf(diff, "%f", rawdiff) < 0)
     err(EXIT_FAILURE, "failed to sprintf() double to string");
 
-  insert(sleep_at, wakeup_at, diff);
+  insert(etype, sleep_at, wakeup_at, diff);
 }
 
 void sql_ping(void) {

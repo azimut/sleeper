@@ -39,7 +39,7 @@ void dpms_check(DPMSState s, time_t now, time_t *last_sleep, time_t *last_wakeup
     if (dt > DT_DPMS) {
       save(SLEEP_FILE, *last_sleep);
       save(AWAKE_FILE, *last_wakeup);
-      sql_insert_event(*last_sleep, *last_wakeup);
+      sql_insert_event("dpms", *last_sleep, *last_wakeup);
     }
   }
   if (dpms_sleep(s.prev_mode, s.mode)) {
