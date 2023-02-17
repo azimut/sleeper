@@ -17,13 +17,6 @@ It will print to stdout (journalctl) and into 2 files
 
 #+begin_src
 psql> CREATE DATABASE activity;
-psql> create table events (
-  id serial primary key,
-  etype varchar(128) not null,
-  sleep_at timestamp with time zone not null,
-  wakeup_at timestamp with time zone not null,
-  diff real not null
-);
 $ make deps
 $ make
 $ make install

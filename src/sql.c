@@ -75,3 +75,19 @@ void sql_ping(void) {
   PGconn *conn = new ();
   PQfinish(conn);
 }
+
+void sql_create_table(void) {
+  const char *query = "create table if not exists events ("
+                      "  id serial primary key,"
+                      "  etype varchar(128) not null,"
+                      "  sleep_at timestamp with time zone not null,"
+                      "  wakeup_at timestamp with time zone not null,"
+                      "  diff real not null"
+                      ");";
+  PGconn *conn = new ();
+  PGresult *res = PQexec(conn, query);
+  if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    do_exit(conn, res);
+  PQclear(res);
+  PQfinish(conn);
+}
