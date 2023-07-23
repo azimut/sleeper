@@ -1,5 +1,6 @@
 [Unit]
 Description=Simple sleeper Logger
+After=network.target
 
 [Service]
 ExecStart=%h/bin/sleeper
