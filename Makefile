@@ -15,6 +15,7 @@ clean: ; rm -f sleeper
 install: sleeper
 	mkdir -p $(HOME)/.config/systemd/user/
 	install -C sleeper.service $(HOME)/.config/systemd/user/
+	systemctl --user daemon-reload
 	systemctl --user stop sleeper
 	cp sleeper $(HOME)/bin/
 	systemctl --user start sleeper
