@@ -20,8 +20,6 @@ void dpms_update(DPMSState *s) {
   DPMSInfo(s->display, &s->mode, &s->client);
 }
 
-static float dt_hours(time_t a, time_t b) { return (a - b) / 60.0f / 60.0f; }
-
 static bool dpms_wake(CARD16 prev_pw, CARD16 pw) {
   return (pw == DPMSModeOn) && (prev_pw != pw);
 }
@@ -31,10 +29,10 @@ static bool dpms_sleep(CARD16 prev_pw, CARD16 pw) {
 }
 
 void dpms_check(DPMSState s, time_t now, time_t *last_sleep, time_t *last_wakeup) {
-  float dt;
+  double dt;
   if (dpms_wake(s.prev_mode, s.mode)) {
     *last_wakeup = now;
-    dt = dt_hours(*last_wakeup, *last_sleep);
+    dt = difftime(*last_wakeup, *last_sleep);
     printf("DPMS screen wake up after `%.2f` hours of sleep\n", dt);
     sql_insert_event("dpms", *last_sleep, *last_wakeup);
     if (dt > DT_DPMS) {
@@ -44,7 +42,7 @@ void dpms_check(DPMSState s, time_t now, time_t *last_sleep, time_t *last_wakeup
   }
   if (dpms_sleep(s.prev_mode, s.mode)) {
     *last_sleep = now;
-    dt = dt_hours(*last_sleep, *last_wakeup);
+    dt = difftime(*last_sleep, *last_wakeup);
     printf("DPMS screen sleeping after `%.2f` hours awake\n", dt);
   }
 }
