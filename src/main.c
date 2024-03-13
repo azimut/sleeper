@@ -20,7 +20,7 @@ void stop(__attribute__((unused)) int sig) {
   quit = true;
 }
 
-int main() {
+int main(void) {
   time_t last_wakeup = load(AWAKE_FILE);
   time_t last_sleep = load(SLEEP_FILE);
   time_t before = 0, now = time(NULL);
