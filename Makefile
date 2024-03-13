@@ -24,4 +24,4 @@ install: sleeper
 deps: ; sudo dnf install -y upower-devel
 
 compile_commands.json:
-	bear make
+	bear -- make
