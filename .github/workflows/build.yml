@@ -9,9 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
       - run: sudo apt-get update
-      - run: sudo apt-get -y install --no-install-recommends libupower-glib-dev libpq5 xorg-dev
+      - run: make deps
       - run: make

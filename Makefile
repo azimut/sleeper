@@ -26,7 +26,7 @@ deps:
 ifeq ($(OS),Fedora)
 	sudo dnf install -y upower-devel
 else ifeq ($(OS),Ubuntu)
-	sudo apt install -y libupower-glib-dev libx11-dev libxext-dev libsqlite3-dev
+	sudo apt install -y --no-install-recommends libupower-glib-dev libx11-dev libxext-dev libsqlite3-dev
 endif
 
 compile_commands.json:
