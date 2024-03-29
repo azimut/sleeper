@@ -35,9 +35,13 @@ int main(void) {
   umask(0);
   chdir("/");
   signal(SIGTERM, stop);
-  sql_ping();
-  sql_create_table();
+
+  int rc = sql_initdb();
+  if (rc)
+    return rc;
+
   sql_insert_event("startup", now, now);
+
   printf("Starting loop...\n");
 
   while (!quit) {

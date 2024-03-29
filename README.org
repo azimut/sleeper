@@ -16,7 +16,7 @@ It will print to stdout (journalctl) and into 2 files
 ** Installation
 
 #+begin_src
-psql> CREATE DATABASE activity;
+$ vim src/config.h # change the filepath where the sqlite3 database will be saved
 $ make deps
 $ make
 $ make install

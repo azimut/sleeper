@@ -1,5 +1,5 @@
 CC      := gcc
-PKGS	:= upower-glib libpq
+PKGS	:= upower-glib sqlite3
 CFLAGS	:= -Wall -Wextra -std=gnu99 -pedantic -ggdb $(shell pkg-config --cflags $(PKGS))
 LDFLAGS := -lX11 -lXext $(shell pkg-config --libs $(PKGS))
 SRC     := $(wildcard src/*.c)
@@ -26,7 +26,7 @@ deps:
 ifeq ($(OS),Fedora)
 	sudo dnf install -y upower-devel
 else ifeq ($(OS),Ubuntu)
-	sudo apt install -y libupower-glib-dev libpq-dev libx11-dev libxext-dev
+	sudo apt install -y libupower-glib-dev libx11-dev libxext-dev libsqlite3-dev
 endif
 
 compile_commands.json:
