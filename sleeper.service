@@ -1,10 +1,11 @@
 [Unit]
 Description=Simple sleeper Logger
-After=network.target
+Wants=graphical.target
+After=graphical.target
 
 [Service]
 ExecStart=%h/bin/sleeper
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target
