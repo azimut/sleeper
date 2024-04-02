@@ -1,11 +1,12 @@
 [Unit]
 Description=Simple sleeper Logger
-Wants=graphical.target
-After=graphical.target
+Wants=x11.target
+After=x11.target
 
 [Service]
 ExecStart=%h/bin/sleeper
 Restart=on-failure
+Environment="DISPLAY=:0"
 
 [Install]
-WantedBy=graphical.target
+WantedBy=default.target
