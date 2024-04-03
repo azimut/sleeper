@@ -18,7 +18,7 @@ void suspension_check(time_t now, time_t before, time_t *last_sleep,
     *last_wakeup = now;
     dt = difftime(*last_wakeup, *last_sleep);
     printf("Suspension sytem wake after `%.2f` hours\n", dt);
-    sql_insert_event("suspension", *last_sleep, *last_wakeup);
+    sql_insert_event("suspension wakeup", *last_sleep, *last_wakeup);
     if (dt > DT_SUSPENSION) {
       save(AWAKE_FILE, *last_wakeup);
       save(SLEEP_FILE, *last_sleep);

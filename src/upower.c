@@ -11,5 +11,5 @@ void upower_update(UpState *u) {
 
 void upower_check(UpState u) {
   if (u.battery != u.prev_battery)
-    printf("Battery status changed to `%d`\n", u.battery);
+    printf("UPower: Battery status changed to `%d`\n", u.battery);
 }

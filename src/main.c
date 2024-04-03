@@ -4,6 +4,7 @@
 #include "./sql.h"
 #include "./suspend.h"
 #include "./upower.h"
+#include "./utils.h"
 
 #include <err.h>
 #include <stdbool.h>
@@ -21,12 +22,20 @@ void stop(__attribute__((unused)) int sig) {
 }
 
 int main(void) {
-  time_t last_wakeup = load(AWAKE_FILE);
+
   time_t last_sleep = load(SLEEP_FILE);
+  printf("Last sleep: %s\n", format_date(last_sleep));
+
+  time_t last_wakeup = load(AWAKE_FILE);
+  printf("Last wakeup: %s\n", format_date(last_wakeup));
+
   time_t before = 0, now = time(NULL);
 
-  DPMSState dpms_state = dpms_new();
   UpState upstate = upower_new();
+  upower_update(&upstate);
+  printf("UPower: initial battery state is %d\n", upstate.battery);
+
+  DPMSState dpms_state = dpms_new();
 
   // Unbuffer stdout
   if (setvbuf(stdout, NULL, _IONBF, 0) != 0)
