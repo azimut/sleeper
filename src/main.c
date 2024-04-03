@@ -52,7 +52,6 @@ int main(void) {
   sql_insert_event("startup", now, now);
 
   printf("Starting loop...\n");
-
   while (!quit) {
     sleep(WHILE_SLEEP_TIME);
 
