@@ -42,7 +42,7 @@ void dpms_check(DPMSState s, time_t now, time_t *last_sleep, time_t *last_wakeup
   }
   if (dpms_sleep(s.prev_mode, s.mode)) {
     *last_sleep = now;
-    sql_insert_event("dpms sleep", *last_sleep, *last_wakeup);
+    sql_insert_event("dpms sleep", *last_wakeup, *last_sleep);
     dt = difftime(*last_sleep, *last_wakeup) / 60 / 60;
     printf("DPMS: screen sleeping after `%.2f` hours awake\n", dt);
   }
