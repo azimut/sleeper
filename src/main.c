@@ -43,9 +43,8 @@ int main(void) {
   chdir("/");
   signal(SIGTERM, stop);
 
-  int rc = sql_initdb();
-  if (rc)
-    return rc;
+  if (sql_initdb() != 0)
+    return EXIT_FAILURE;
 
   sql_insert_event("startup", now, now);
 
