@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/sysinfo.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -28,6 +29,19 @@ int main(void) {
 
   time_t last_wakeup = load(AWAKE_FILE);
   printf("Last wakeup: %s\n", format_date(last_wakeup));
+
+  struct sysinfo s_info;
+  if (sysinfo(&s_info) != 0)
+    return EXIT_FAILURE;
+
+  time_t last_poweron = time(NULL) - s_info.uptime;
+  printf("System uptime: %d\n", (int)s_info.uptime);
+  printf("System up since: %s\n", format_date(last_poweron));
+  if ((time(NULL) - last_wakeup) / 60 / 60 > DT_SHUTDOWN) {
+    last_wakeup = last_poweron;
+    save(AWAKE_FILE, last_poweron);
+    printf("Fast-forwarding wakeup time to match uptime.\n");
+  }
 
   time_t before = 0;
   time_t now = time(NULL);
