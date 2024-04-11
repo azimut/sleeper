@@ -29,12 +29,10 @@ int main(void) {
   time_t last_wakeup = load(AWAKE_FILE);
   printf("Last wakeup: %s\n", format_date(last_wakeup));
 
-  time_t before = 0, now = time(NULL);
+  time_t before = 0;
+  time_t now = time(NULL);
 
   UpState upstate = upower_new();
-  upower_update(&upstate);
-  printf("UPower: initial battery state is %d\n", upstate.battery);
-
   DPMSState dpms_state = dpms_new();
 
   // Unbuffer stdout
