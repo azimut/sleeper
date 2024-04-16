@@ -11,9 +11,10 @@
 
 static int insert(const char *etype, const char *sleep_at, const char *wakeup_at,
                   const char *diff) {
-  int rc;
   sqlite3 *db;
-  rc = sqlite3_open(SQL_FILE, &db);
+  char *dbpath = from_home(DB_PATH);
+
+  int rc = sqlite3_open(dbpath, &db);
   if (rc != SQLITE_OK) {
     fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
     return 1;
@@ -57,6 +58,7 @@ static int insert(const char *etype, const char *sleep_at, const char *wakeup_at
 
   sqlite3_finalize(stmt);
   sqlite3_close(db);
+  free(dbpath);
   return 0;
 }
 
@@ -79,14 +81,16 @@ void sql_insert_event(const char *etype, const time_t sleep, const time_t wakeup
 
 int sql_oneshot(const char *query) {
   sqlite3 *db;
-  int rc;
   char *zErrMsg = 0;
-  rc = sqlite3_open(SQL_FILE, &db);
+  char *dbpath = from_home(DB_PATH);
+
+  int rc = sqlite3_open(dbpath, &db);
   if (rc) {
     fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
     sqlite3_close(db);
     return 1;
   }
+
   rc = sqlite3_exec(db, query, NULL, 0, &zErrMsg);
   if (rc != SQLITE_OK) {
     fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
@@ -94,6 +98,7 @@ int sql_oneshot(const char *query) {
     return 1;
   }
   sqlite3_close(db);
+  free(dbpath);
   return 0;
 }
 

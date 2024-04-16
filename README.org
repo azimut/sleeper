@@ -19,7 +19,6 @@ Prints to stdout (journalctl) and into 2 files.
 ** Installation
 
 #+begin_src
-$ vim src/config.h # change the filepath where the sqlite3 database will be saved
 $ make deps
 $ make
 $ make install

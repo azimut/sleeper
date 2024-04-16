@@ -1,7 +1,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#define SQL_FILE "file:/home/sendai/.config/sleeper.db"
+#define DB_PATH "/.cache/sleeper.db"
 
 #define WHILE_SLEEP_TIME 60
 
