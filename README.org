@@ -11,10 +11,14 @@ It tries to figure it out by checking:
 
 It has to run as a daemon, since there are no system logs for some of these.
 
-Prints to stdout (journalctl) and into 2 files.
+Keeps these 2 files updated (to help me integrate with external programs, I can just check their modification date).
 
 - ~/.cache/awaketime
 - ~/.cache/sleeptime
+
+Keeps historical data in a SQLite database:
+
+- ~/.cache/sleeper.db
 
 ** Installation
 
