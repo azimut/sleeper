@@ -1,15 +1,18 @@
 * sleeper
 
-A deamon to keep track of your computer usage.
+A deamon to keep track of how long you have been awake, by tracking your computer usage.
 
-It tries to figure it out by:
-- Checking changes of status on X11 DPMS
-- Checking for system suspensions
-- Checking your battery connection status (using upower)
+It tries to figure it out by checking:
 
-It needs to run as a daemon, since there is no system log for DPMS or battery status changes.
+- changes of status on X11 DPMS
+- system suspensions
+- system shutdowns (utmp)
+- battery connection status (upower)
 
-It will print to stdout (journalctl) and into 2 files
+It has to run as a daemon, since there are no system logs for some of these.
+
+Prints to stdout (journalctl) and into 2 files.
+
 - ~/.cache/awaketime
 - ~/.cache/sleeptime
 
@@ -24,6 +27,7 @@ $ systemctl --user enable sleeper
 #+end_src
 
 ** References
+
 - https://askubuntu.com/questions/1171742/how-to-get-date-time-of-the-last-system-hibernate-suspend-resume
 - https://stackoverflow.com/questions/60477195/turning-off-monitor-in-c/60477486
 - https://upower.freedesktop.org/docs/UPower-up-client.html
