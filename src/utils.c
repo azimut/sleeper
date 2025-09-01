@@ -12,7 +12,7 @@ char *format_date(const time_t t) {
   if (!buf)
     err(EXIT_FAILURE, "failed malloc()");
 
-  if (strftime(buf, 100, "%a %b %d %T %Y", tmp) == 0)
+  if (strftime(buf, 100, "%F %T", tmp) == 0)
     err(EXIT_FAILURE, "failed strftime()");
 
   return buf;
